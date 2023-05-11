@@ -1,15 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: adelille <adelille@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2020/11/30 19:21:49 by adelille          #+#    #+#              #
-#    Updated: 2022/02/12 14:57:33 by esafar           ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 NAME =	libft.a
 CC = 	cc
 AR =	ar rcs
@@ -76,11 +64,11 @@ INC =		./inc/
 				bool_detect/ft_isdigit.c bool_detect/ft_isprint.c
 
 #SRCS =		$(addprefix $(SRCSPATH), $(SRCSNAME))
-SRCS =		$(wildcard $(SRCSPATH)*.c) $(wildcard $(SRCSPATH)**/*.c)
-SRCSNAME =	$(subst $(SRCSPATH), , $(SRCS))
+SRCS = $(shell find $(SRCSPATH) -name '*.c')
+SRCSNAME = $(subst $(SRCSPATH), , $(SRCS))
 
-OBJSNAME =	$(SRCSNAME:.c=.o)
-OBJS =		$(addprefix $(OBJSPATH), $(OBJSNAME))
+OBJSNAME = $(patsubst %.c, %.o, $(SRCSNAME))
+OBJS = $(addprefix $(OBJSPATH), $(OBJSNAME))
 
 # *************************************************************************** #
 
@@ -130,4 +118,3 @@ re:			fclean all
 
 .PHONY: all clean fclean re launch #lib
 
-# **************************************************************************** #

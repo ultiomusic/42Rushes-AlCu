@@ -1,49 +1,84 @@
-# Compiler
-CC = cc
 
-# Compiler flags
-CFLAGS = -Wall -Werror -Wextra -g3
 
-# Name of the executable
-NAME = alum1
+NAME =	alum1
+CC = 	cc
+AR =	ar rcs
+RM = 	rm -rf
 
-# Directories
-SRCDIR = src
-INCDIR = inc
-OBJDIR = obj
-LIBDIR = libft
+CFLAGS =	#-Wall -Werror -Wextra
+# CFLAGS +=	-O2
+CFLAGS +=	-g3
+# CFLAGS +=	-fsanitize=address
 
-# Source files
-SRC = $(shell find $(SRCDIR) -type f -name "*.c")
+MAKEFLAGS += --silent
 
-# Object files
-OBJ = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRC))
+SHELL := bash
 
-# Includes
-INC = -I$(INCDIR) -I$(LIBDIR)/$(INCDIR)
+B =		$(shell tput bold)
+BLA =	$(shell tput setaf 0)
+RED =	$(shell tput setaf 1)
+GRE =	$(shell tput setaf 2)
+YEL =	$(shell tput setaf 3)
+BLU =	$(shell tput setaf 4)
+MAG =	$(shell tput setaf 5)
+CYA =	$(shell tput setaf 6)
+WHI =	$(shell tput setaf 7)
+D =		$(shell tput sgr0)
+BEL =	$(shell tput bel)
+CLR =	$(shell tput el 1)
 
-# Libraries
-LIB = -L$(LIBDIR) -lft
+LIBPATH =	./libft/
+LIBNAME =	$(LIBPATH)libft.a
+LIBINC =	-I$(LIBPATH)
 
-# Rule to build the executable
-$(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(INC) $^ -o $@ $(LIB)
+SRCSPATH =	./src/
+OBJSPATH =	./obj/
+INC =		./inc/
 
-# Rule to build object files
-$(OBJDIR)/%.o: $(SRCDIR)/%.c
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INC) -c $< -o $@
+SRCS =		$(filter %.c,$(shell find $(SRCSPATH) -type f))
+SRCSNAME =	$(notdir $(SRCS))
 
-# Clean rule
+OBJSNAME =	$(SRCSNAME:.c=.o)
+OBJS =		$(addprefix $(OBJSPATH), $(OBJSNAME))
+
+define	progress_bar
+	@i=0
+	@while [[ $$i -le $(words $(SRCS)) ]] ; do \
+		printf " " ; \
+		((i = i + 1)) ; \
+	done
+	@printf "$(B)]\r[$(D)"
+endef
+
+all:		launch $(NAME)
+	@printf "\n$(B)$(MAG)$(NAME) compiled$(D)\n"
+
+test:		all
+	@./$(NAME)
+
+launch:
+	$(call progress_bar)
+
+$(NAME):	$(OBJS) $(LIBNAME)
+	$(CC) $(CFLAGS) $(OBJS) $(LIBNAME) -o $(NAME)
+
+$(OBJSPATH)%.o: $(SRCSPATH)%.c
+	@mkdir -p $(dir $@) # 2> /dev/null || true
+	$(CC) $(CFLAGS) -I$(INC) -c $< -o $@
+	@printf "$(B)$(GRE)█$(D)"
+
+$(LIBNAME):
+	@printf "$(D)$(B)$(BLU)\n$(NAME) objects compiled\n\n$(D)"
+	@$(MAKE) -C $(LIBPATH)
+	
 clean:
-	$(RM) $(OBJDIR)
+	@$(RM) $(OBJSPATH)
+	@$(MAKE) clean -C $(LIBPATH)
 
-# Full clean rule
-fclean: clean
-	$(RM) $(NAME)
+fclean:		clean
+	@$(RM) $(NAME)
+	@$(MAKE) fclean -C $(LIBPATH)
 
-# Rebuild rule
-re: fclean all
+re:			fclean all
 
-# Default rule
-all: $(NAME)
+.PHONY: all clean fclean re launch test
