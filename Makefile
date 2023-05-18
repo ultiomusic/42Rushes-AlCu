@@ -6,7 +6,6 @@ AR =	ar rcs
 RM = 	rm -rf
 
 CFLAGS =	#-Wall -Werror -Wextra
-# CFLAGS +=	-O2
 CFLAGS +=	-g3
 # CFLAGS +=	-fsanitize=address
 
